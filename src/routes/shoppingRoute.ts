@@ -6,7 +6,7 @@ export type User = {
   username: string;
 };
 
-export async function userRoutes(fastify: FastifyInstance) {
+export async function shoppingRoutes(fastify: FastifyInstance) {
   fastify.get("/", (request, reply) => {
     return { hello: "goodbye" };
   });

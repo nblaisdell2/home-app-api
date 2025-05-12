@@ -1,11 +1,7 @@
-import Fastify, {
-  FastifyInstance,
-  FastifyReply,
-  FastifyRequest,
-} from "fastify";
+import Fastify, { FastifyInstance, FastifyReply } from "fastify";
 import db, { getConnection } from "./db";
 import { config } from "dotenv";
-import { userRoutes } from "./routes/userRoute";
+import { shoppingRoutes } from "./routes/shoppingRoute";
 import { getSecrets } from "./secrets";
 
 config();
@@ -33,18 +29,12 @@ async function init(): Promise<FastifyInstance> {
   // ================================
   const secrets = await getSecrets(process.env.SECRET_ID as string);
   fastify.decorate("config", secrets);
-  console.log(fastify.config);
 
   // ================================
   // ==========  ROUTES  ============
   // ================================
-  fastify.register(db, getConnection(fastify, IS_LOCAL));
-
-  fastify.register(userRoutes);
-
-  fastify.get("/ping", async (request: FastifyRequest, reply: FastifyReply) => {
-    return "pong\n";
-  });
+  fastify.register(db, getConnection(IS_LOCAL));
+  fastify.register(shoppingRoutes);
 
   // ================================
   // ============ HOOKS =============
@@ -55,8 +45,6 @@ async function init(): Promise<FastifyInstance> {
 
   fastify.addHook("preParsing", async (request, reply, payload) => {});
 
-  // const importantKey = await generateRandomString()
-  // request.body = { ...request.body, importantKey }
   fastify.addHook("preValidation", async (request, reply) => {});
   fastify.addHook("preHandler", async (request, reply) => {});
 
