@@ -64,6 +64,8 @@ export async function exec<TResult extends QueryResultRow>(
   ...procParams: any[]
 ) {
   const { sql, params } = getProcedureSQL(procName, ...procParams);
+  console.log(sql);
+  console.log(params);
   const result = await fastify.pg.query<TResult>(sql, params);
   return result;
 }

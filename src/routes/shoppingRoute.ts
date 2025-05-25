@@ -7,31 +7,62 @@ export type User = {
 };
 
 export async function shoppingRoutes(fastify: FastifyInstance) {
-  fastify.get("/", (request, reply) => {
-    return { hello: "goodbye" };
+  fastify.get("/get_shopping_list", async (req, reply) => {
+    const { rows: rowsList } = await query(
+      fastify,
+      "shopping.get_shopping_list"
+    );
+    const { rows: storeList } = await query(fastify, "shopping.get_stores");
+
+    const newRows = rowsList.map((row) => {
+      return {
+        id: row.id,
+        name: row.name,
+        store: {
+          id: row.store_id,
+          name: storeList.filter((r) => r.id == row.store_id)[0].name,
+        },
+      };
+    });
+
+    return reply.send(newRows);
   });
 
-  fastify.post<{ Body: { username: string }; Reply: User[] }>(
-    "/new_user",
+  fastify.post<{ Body: { itemName: string; storeName: string } }>(
+    "/add_item",
     async (req, reply) => {
-      const { rows } = await exec<User>(
+      const { rows } = await exec<{ itemName: string; storeName: string }>(
         fastify,
-        "add_new_user",
-        req.body.username
+        "shopping.add_item_to_list",
+        req.body.itemName,
+        req.body.storeName
       );
-      return reply.send(rows);
+      return reply.send({ message: "Item added to list successfully!" });
     }
   );
 
-  fastify.get<{
-    Params: { id: number };
-    Reply: User[];
-  }>("/user/:id", async (req, reply) => {
-    const { rows } = await query<User>(
+  fastify.delete<{ Params: { itemID: number } }>(
+    "/remove_item/:itemID",
+    async (req, reply) => {
+      const { rows } = await exec(
+        fastify,
+        "shopping.remove_item_from_list",
+        req.params.itemID
+      );
+      return reply.send({ message: "Item removed from list successfully!" });
+    }
+  );
+
+  fastify.put<{
+    Body: { itemID: number; newItemName: string; newStoreName: string };
+  }>("/update_item", async (req, reply) => {
+    const { rows } = await exec(
       fastify,
-      "get_user_by_id",
-      req.params.id
+      "shopping.update_item",
+      req.body.itemID,
+      req.body.newItemName,
+      req.body.newStoreName
     );
-    return reply.send(rows);
+    return reply.send({ message: "Item updated successfully!" });
   });
 }

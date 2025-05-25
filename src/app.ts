@@ -33,6 +33,7 @@ async function init(): Promise<FastifyInstance> {
   // ================================
   // ==========  ROUTES  ============
   // ================================
+  fastify.register(require("@fastify/formbody"));
   fastify.register(db, getConnection(IS_LOCAL));
   fastify.register(shoppingRoutes);
 

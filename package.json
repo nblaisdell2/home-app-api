@@ -6,7 +6,7 @@
     "secrets": "bash update-secrets.sh",
     "build": "tsc -p tsconfig.json",
     "prestart": "npm run build",
-    "start": "node dist/app.js"
+    "start": "nodemon src/app.ts"
   },
   "keywords": [],
   "author": "",
@@ -15,9 +15,12 @@
   "dependencies": {
     "@aws-sdk/client-secrets-manager": "^3.787.0",
     "@fastify/aws-lambda": "^5.1.4",
+    "@fastify/formbody": "^7.4.0",
     "@fastify/postgres": "^5.2.2",
     "dotenv": "^16.5.0",
-    "fastify": "4.22.2"
+    "fastify": "4.22.2",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2"
   },
   "devDependencies": {
     "@types/node": "^22.14.1",
