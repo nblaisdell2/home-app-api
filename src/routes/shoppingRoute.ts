@@ -25,7 +25,10 @@ export async function shoppingRoutes(fastify: FastifyInstance) {
       };
     });
 
-    return reply.send(newRows);
+    return reply.send({
+      items: newRows,
+      stores: storeList,
+    });
   });
 
   fastify.post<{ Body: { itemName: string; storeName: string } }>(
